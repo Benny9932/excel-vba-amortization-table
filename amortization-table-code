@@ -1,0 +1,190 @@
+Dim annual_interest_rate As String
+Dim number_of_years As String
+Dim loan_amount As String
+
+
+
+-- Input Annual Interest Rate
+Sub Input_Annual_Interest_Rate_1()
+    ' Prompt user to input annual interest rate
+    Dim myInp As String
+    myInp = VBA.Interaction.InputBox("Please enter the annual interest rate")
+    ' Validate input
+    If myInp = "" Then
+        MsgBox "Nothing has been entered."
+    ElseIf IsNumeric(myInp) Then
+        If myInp >= 100 Then
+            MsgBox "Please enter a value less than 100."
+        Else
+            ' Convert annual interest rate to decimal
+            myInp = myInp / 100
+            annual_interest_rate = myInp
+        End If
+    Else
+        MsgBox "Please enter a numeric value."
+    End If
+End Sub
+
+
+
+
+-- Input Number of Years
+Sub Input_Number_of_Years_2()
+    ' Prompt user to input number of years for the loan term
+    Dim myInp As String
+    myInp = VBA.Interaction.InputBox("Please enter the number of years for the term of the loan.")
+    ' Validate input
+    If myInp = "" Then
+        MsgBox "Nothing has been entered."
+    ElseIf IsNumeric(myInp) Then
+        number_of_years = myInp
+    Else
+        MsgBox "Please enter a numeric value."
+    End If
+End Sub
+
+
+
+
+-- Input Loan Amount
+Sub Input_Loan_Amount_3()
+    ' Prompt user to input the loan amount
+    Dim myInp As String
+    myInp = VBA.Interaction.InputBox("Please enter the loan amount.")
+    ' Validate input
+    If myInp = "" Then
+        MsgBox "Nothing has been entered."
+    ElseIf IsNumeric(myInp) Then
+        loan_amount = myInp
+    Else
+        MsgBox "Please enter a numeric value."
+    End If
+End Sub
+
+
+
+
+-- Clear Data in Amortization Table
+Sub Clear_Data_4()
+    ' Clear data in the amortization table starting from row 7
+    Dim lastRow As Long
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    If lastRow >= 7 Then
+        Range("A7:E" & lastRow).ClearContents
+    End If
+End Sub
+
+
+
+
+-- Input All Information
+Sub Input_All_Info_5()
+    ' Fill in the cells B1, B2, and B4 with the values entered by the user
+    Range("B1").Value = annual_interest_rate
+    Range("B2").Value = number_of_years
+    Range("B4").Value = loan_amount
+End Sub
+
+
+
+
+-- Amortization Table
+Sub Amortization_Table_6()
+    ' Generate the amortization table
+    Dim periods As Double
+    Dim i As Integer
+    Dim lastRow As Long
+    Dim initialLoanAmount As Double
+    ' Initialize the first row of the table
+    Range("A7").Value = 0
+    initialLoanAmount = Range("B4").Value
+    Range("E7").Value = initialLoanAmount
+    ' Loop through all periods of the loan
+    Do While Cells(Rows.Count, "E").End(xlUp).Value > 0
+        periods = Range("B2").Value * Range("B3").Value
+        ' Insert rows for each period and calculate payment amounts, interest, principal, and remaining balances
+        For i = 1 To periods
+            Rows(Rows.Count).Insert Shift:=xlUp
+            Cells(Rows.Count, 1).End(xlUp).Offset(1, 0).Value = i
+        Next i
+        ' Calculate payment amounts
+        lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+        Range("B8").Formula = "=PMT($B$1/$B$3, $B$3*$B$2, $B$4)"
+        Range("B8").AutoFill Destination:=Range("B8:B" & lastRow)
+        ' Calculate interest payments
+        lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+        Range("C8").Formula = "=IPMT($B$1/$B$3, A8, $B$3*$B$2, $B$4)"
+        Range("C8").AutoFill Destination:=Range("C8:C" & lastRow)
+        ' Calculate principal payments
+        lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+        Range("D8").Formula = "=PPMT($B$1/$B$3, A8, $B$2*$B$3, $B$4)"
+        Range("D8").AutoFill Destination:=Range("D8:D" & lastRow)
+        ' Calculate remaining balances
+        lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+        Range("E8").Formula = "=E7+D8"
+        Range("E8").AutoFill Destination:=Range("E8:E" & lastRow)
+    Loop
+End Sub
+
+
+
+
+-- Proper Case for Titles A1 to A4
+Sub Proper_Case_A1_A4_7()
+    ' Change titles in cells A1 to A4 to proper case
+    Dim cell As Range
+    For Each cell In Range("A1:A4")
+        cell.Value = WorksheetFunction.Proper(cell.Value)
+    Next cell
+End Sub
+
+
+
+
+-- Capitalize Column Titles A6 to E6
+Sub Capitilize_All_A6_E6_8()
+    ' Capitalize column titles in cells A6 to E6
+    Dim cell As Range
+    For Each cell In Range("A6:E6")
+        cell.Value = VBA.UCase(cell.Value)
+    Next cell
+End Sub
+
+
+
+
+-- Bold Column Titles A6 to E6
+Sub Bold_A6_E6_9()
+    ' Make column titles in cells A6 to E6 bold
+    Range("A6:E6").Font.Bold = True
+End Sub
+
+
+
+
+-- Apply Blue Background to Column Titles A6 to E6
+Sub Background_Blue_10()
+    ' Apply blue background color to column titles in cells A6 to E6
+    Range("A6:E6").Interior.Color = vbBlue
+End Sub
+
+
+
+
+-- Display Monthly Payment in Cell E1
+Sub Display_Monthly_Payment_11()
+    ' Calculate and display the monthly payment in cell E1
+    Range("E1").Formula = "=PMT($B$1/$B$3, $B$3*$B$2, $B$4)"
+End Sub
+
+
+
+
+-- Calculate Total Interest Paid
+Sub Total_Interest_12()
+    ' Calculate the total interest paid over the course of the loan
+    Total_Interest = Application.WorksheetFunction.Sum(Range("C:C"))
+    Total_Interest = Round(Total_Interest, 2)
+    Total_Interest = Abs(Total_Interest)
+    MsgBox "Total Interest Paid $" & Total_Interest
+End Sub
