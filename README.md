@@ -8,11 +8,6 @@ This project implements an Excel VBA script to generate an amortization table fo
 - **Dynamic Table Creation**: Implements a loop to calculate and populate the amortization table dynamically.
 - **Formatting Automation**: Utilizes VBA macros to automate formatting tasks, enhancing data presentation and readability.
 
-## Usage
-
-1. Open the Excel file containing the VBA script.
-2. Enable macros if prompted.
-3. Use the provided macros to input loan information, generate the amortization table, and perform formatting tasks.
 
 ## Macros Overview
 
